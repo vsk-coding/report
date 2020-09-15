@@ -1,0 +1,139 @@
+2020-09-15 04:00:06,068 INFO kube_hunter.modules.report.collector Started hunting
+2020-09-15 04:00:06,068 INFO kube_hunter.modules.report.collector Discovering Open Kubernetes Services
+2020-09-15 04:00:06,077 INFO kube_hunter.modules.report.collector Found vulnerability "Read access to pod's service account token" in Local to Pod (kube-hunter-gf8kw)
+2020-09-15 04:00:06,077 INFO kube_hunter.modules.report.collector Found vulnerability "Access to pod's secrets" in Local to Pod (kube-hunter-gf8kw)
+2020-09-15 04:00:06,078 INFO kube_hunter.modules.report.collector Found vulnerability "CAP_NET_RAW Enabled" in Local to Pod (kube-hunter-gf8kw)
+2020-09-15 04:00:06,235 INFO kube_hunter.modules.report.collector Found open service "Kubelet API (readonly)" at 10.36.0.1:10255
+2020-09-15 04:00:06,239 INFO kube_hunter.modules.report.collector Found open service "Kubelet API" at 10.36.0.1:10250
+2020-09-15 04:00:06,282 INFO kube_hunter.modules.report.collector Found open service "Metrics Server" at 10.36.0.10:443
+2020-09-15 04:00:06,344 INFO kube_hunter.modules.report.collector Found vulnerability "K8s Version Disclosure" in 10.36.0.1:10255
+2020-09-15 04:00:06,345 INFO kube_hunter.modules.report.collector Found vulnerability "Privileged Container" in 10.36.0.1:10255
+2020-09-15 04:00:06,345 INFO kube_hunter.modules.report.collector Found vulnerability "Cluster Health Disclosure" in 10.36.0.1:10255
+2020-09-15 04:00:06,346 INFO kube_hunter.modules.report.collector Found vulnerability "Exposed Pods" in 10.36.0.1:10255
+2020-09-15 04:00:13,809 INFO kube_hunter.modules.report.collector Found open service "API Server" at 10.0.0.1:443
+2020-09-15 04:00:13,866 INFO kube_hunter.modules.report.collector Found vulnerability "Access to API using service account token" in 10.0.0.1:443
+2020-09-15 04:00:13,869 INFO kube_hunter.modules.report.collector Found vulnerability "K8s Version Disclosure" in 10.0.0.1:443
+
+Nodes
++-------------+------------+
+| TYPE        | LOCATION   |
++-------------+------------+
+| Node/Master | 10.36.0.10 |
++-------------+------------+
+| Node/Master | 10.36.0.1  |
++-------------+------------+
+| Node/Master | 10.0.0.1   |
++-------------+------------+
+
+Detected Services
++----------------------+-----------------+----------------------+
+| SERVICE              | LOCATION        | DESCRIPTION          |
++----------------------+-----------------+----------------------+
+| Metrics Server       | 10.36.0.10:443  | The Metrics server   |
+|                      |                 | is in charge of      |
+|                      |                 | providing resource   |
+|                      |                 | usage metrics for    |
+|                      |                 | pods and nodes to    |
+|                      |                 | the API server       |
++----------------------+-----------------+----------------------+
+| Kubelet API          | 10.36.0.1:10255 | The read-only port   |
+| (readonly)           |                 | on the kubelet       |
+|                      |                 | serves health        |
+|                      |                 | probing endpoints,   |
+|                      |                 |     and is relied    |
+|                      |                 | upon by many         |
+|                      |                 | kubernetes           |
+|                      |                 | components           |
++----------------------+-----------------+----------------------+
+| Kubelet API          | 10.36.0.1:10250 | The Kubelet is the   |
+|                      |                 | main component in    |
+|                      |                 | every Node, all pod  |
+|                      |                 | operations goes      |
+|                      |                 | through the kubelet  |
++----------------------+-----------------+----------------------+
+| API Server           | 10.0.0.1:443    | The API server is in |
+|                      |                 | charge of all        |
+|                      |                 | operations on the    |
+|                      |                 | cluster.             |
++----------------------+-----------------+----------------------+
+
+Vulnerabilities
+For further information about a vulnerability, search its ID in: 
+https://github.com/aquasecurity/kube-hunter/tree/master/docs/_kb
++--------+----------------------+----------------------+----------------------+----------------------+----------------------+
+| ID     | LOCATION             | CATEGORY             | VULNERABILITY        | DESCRIPTION          | EVIDENCE             |
++--------+----------------------+----------------------+----------------------+----------------------+----------------------+
+| None   | 10.36.0.1:10255      | Information          | Exposed Pods         | An attacker could    | count: 13            |
+|        |                      | Disclosure           |                      | view sensitive       |                      |
+|        |                      |                      |                      | information about    |                      |
+|        |                      |                      |                      | pods that are        |                      |
+|        |                      |                      |                      |     bound to a Node  |                      |
+|        |                      |                      |                      | using the /pods      |                      |
+|        |                      |                      |                      | endpoint             |                      |
++--------+----------------------+----------------------+----------------------+----------------------+----------------------+
+| KHV043 | 10.36.0.1:10255      | Information          | Cluster Health       | By accessing the     | status: ok           |
+|        |                      | Disclosure           | Disclosure           | open /healthz        |                      |
+|        |                      |                      |                      | handler,             |                      |
+|        |                      |                      |                      |     an attacker      |                      |
+|        |                      |                      |                      | could get the        |                      |
+|        |                      |                      |                      | cluster health state |                      |
+|        |                      |                      |                      | without              |                      |
+|        |                      |                      |                      | authenticating       |                      |
++--------+----------------------+----------------------+----------------------+----------------------+----------------------+
+| KHV005 | 10.0.0.1:443         | Information          | Access to API using  | The API Server port  | b'{"kind":"APIVersio |
+|        |                      | Disclosure           | service account      | is accessible.       | ns","versions":["v1" |
+|        |                      |                      | token                |     Depending on     | ...                  |
+|        |                      |                      |                      | your RBAC settings   |                      |
+|        |                      |                      |                      | this could expose    |                      |
+|        |                      |                      |                      | access to or control |                      |
+|        |                      |                      |                      | of your cluster.     |                      |
++--------+----------------------+----------------------+----------------------+----------------------+----------------------+
+| KHV002 | 10.36.0.1:10255      | Information          | K8s Version          | The kubernetes       | v1.15.12-gke.2       |
+|        |                      | Disclosure           | Disclosure           | version could be     |                      |
+|        |                      |                      |                      | obtained from the    |                      |
+|        |                      |                      |                      | /metrics endpoint on |                      |
+|        |                      |                      |                      | Kubelet              |                      |
++--------+----------------------+----------------------+----------------------+----------------------+----------------------+
+| KHV002 | 10.0.0.1:443         | Information          | K8s Version          | The kubernetes       | v1.15.12-gke.2       |
+|        |                      | Disclosure           | Disclosure           | version could be     |                      |
+|        |                      |                      |                      | obtained from the    |                      |
+|        |                      |                      |                      | /version endpoint    |                      |
++--------+----------------------+----------------------+----------------------+----------------------+----------------------+
+| None   | Local to Pod (kube-  | Access Risk          | CAP_NET_RAW Enabled  | CAP_NET_RAW is       |                      |
+|        | hunter-gf8kw)        |                      |                      | enabled by default   |                      |
+|        |                      |                      |                      | for pods.            |                      |
+|        |                      |                      |                      |     If an attacker   |                      |
+|        |                      |                      |                      | manages to           |                      |
+|        |                      |                      |                      | compromise a pod,    |                      |
+|        |                      |                      |                      |     they could       |                      |
+|        |                      |                      |                      | potentially take     |                      |
+|        |                      |                      |                      | advantage of this    |                      |
+|        |                      |                      |                      | capability to        |                      |
+|        |                      |                      |                      | perform network      |                      |
+|        |                      |                      |                      |     attacks on other |                      |
+|        |                      |                      |                      | pods running on the  |                      |
+|        |                      |                      |                      | same node            |                      |
++--------+----------------------+----------------------+----------------------+----------------------+----------------------+
+| None   | Local to Pod (kube-  | Access Risk          | Access to pod's      |  Accessing the pod's | ['/var/run/secrets/k |
+|        | hunter-gf8kw)        |                      | secrets              | secrets within a     | ubernetes.io/service |
+|        |                      |                      |                      | compromised pod      | ...                  |
+|        |                      |                      |                      | might disclose       |                      |
+|        |                      |                      |                      | valuable data to a   |                      |
+|        |                      |                      |                      | potential attacker   |                      |
++--------+----------------------+----------------------+----------------------+----------------------+----------------------+
+| KHV050 | Local to Pod (kube-  | Access Risk          | Read access to pod's |  Accessing the pod   | eyJhbGciOiJSUzI1NiIs |
+|        | hunter-gf8kw)        |                      | service account      | service account      | ImtpZCI6IjNZdFlTTS1W |
+|        |                      |                      | token                | token gives an       | ...                  |
+|        |                      |                      |                      | attacker the option  |                      |
+|        |                      |                      |                      | to use the server    |                      |
+|        |                      |                      |                      | API                  |                      |
++--------+----------------------+----------------------+----------------------+----------------------+----------------------+
+| KHV044 | 10.36.0.1:10255      | Access Risk          | Privileged Container | A Privileged         | pod: kube-proxy-gke- |
+|        |                      |                      |                      | container exist on a | kube-demo-default-   |
+|        |                      |                      |                      | node                 | po...                |
+|        |                      |                      |                      |     could expose the |                      |
+|        |                      |                      |                      | node/cluster to      |                      |
+|        |                      |                      |                      | unwanted root        |                      |
+|        |                      |                      |                      | operations           |                      |
++--------+----------------------+----------------------+----------------------+----------------------+----------------------+
+
